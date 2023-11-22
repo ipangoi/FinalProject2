@@ -123,8 +123,14 @@ func (s *UserHandlerImpl) UserUpdate(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
-}
+	c.JSON(http.StatusOK, gin.H{
+	"id":       user.ID,
+	"username": user.Username,
+	"email":    user.Email,
+	"age":      user.Age,
+})
+} 
+	
 
 func (s *UserHandlerImpl) UserDelete(c *gin.Context) {
 	var db = database.GetDB()
