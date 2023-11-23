@@ -44,16 +44,23 @@ func (s *PhotoHandlerImpl) PhotoCreate(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, Photo)
+	c.JSON(http.StatusCreated, gin.H{
+		"id": 				Photo.ID,
+		"title" :			Photo.Title,
+		"caption" : 		Photo.Caption,
+		"photo_url" : 		Photo.PhotoURL,
+		"user_id":          userID,
+		"created_at": 		Photo.CreatedAt,
+	})
 }
 
 func (s *PhotoHandlerImpl) PhotoGet(c *gin.Context) {
 	var db = database.GetDB()
-	//userData := c.MustGet("userData").(jwt.MapClaims)
+	userData := c.MustGet("userData").(jwt.MapClaims)
 	contentType := helper.GetContentType(c)
 
-	var Photo []entity.Photo
-	//userID := uint(userData["id"].(float64))
+	Photo := entity.Photo{} 
+	userID := uint(userData["id"].(float64))
 
 	if contentType == appJSON {
 		c.ShouldBindJSON(&Photo)
@@ -61,9 +68,7 @@ func (s *PhotoHandlerImpl) PhotoGet(c *gin.Context) {
 		c.ShouldBind(&Photo)
 	}
 
-	err := db.Preload("User", func(db *gorm.DB) *gorm.DB {
-		return db.Select("id, username, email")
-	}).Find(&Photo).Error
+	err := db.Find(&Photo).Error
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -73,14 +78,22 @@ func (s *PhotoHandlerImpl) PhotoGet(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, Photo)
+	c.JSON(http.StatusOK, gin.H{
+		"id": 				Photo.ID,
+		"title" :			Photo.Title,
+		"caption" : 		Photo.Caption,
+		"photo_url" : 		Photo.PhotoURL,
+		"user_id":          userID,
+		"created_at": 		Photo.CreatedAt,
+		"updated_at": 		Photo.UpdatedAt,
+	})
 }
 
 func (s *PhotoHandlerImpl) PhotoGetOne(c *gin.Context) {
 	var db = database.GetDB()
 	contentType := helper.GetContentType(c)
 
-	var Photo entity.Photo
+	Photo := entity.Photo{}
 
 	if contentType == appJSON {
 		c.ShouldBindJSON(&Photo)
@@ -100,7 +113,20 @@ func (s *PhotoHandlerImpl) PhotoGetOne(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, Photo)
+	c.JSON(http.StatusCreated, gin.H{
+		"id" : 			Photo.ID,
+		"title":		Photo.Title,
+		"caption": 		Photo.Caption,
+		"photo_url":	Photo.PhotoURL,
+		"user_id": 		Photo.UserID,
+		"created_at":	Photo.CreatedAt,
+		"updated_at":	Photo.UpdatedAt,
+		"User":gin.H{
+			"email": 	Photo.User.Email,
+			"username":	Photo.User.Username,
+		},
+
+	})
 }
 
 func (s *PhotoHandlerImpl) PhotoDelete(c *gin.Context) {

@@ -67,14 +67,17 @@ func (s *CommentHandlerImpl) CommentCreate(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, Comment)
+	c.JSON(http.StatusCreated, gin.H{
+		"message": 		Comment.ID,
+		"photo_id":		Comment.Photo,
+	})
 }
 
 func (s *CommentHandlerImpl) CommentGet(c *gin.Context) {
 	var db = database.GetDB()
 	contentType := helper.GetContentType(c)
 
-	var Comment []entity.Comment
+	Comment :=entity.Comment{}
 
 	if contentType == appJSON {
 		c.ShouldBindJSON(&Comment)
@@ -94,7 +97,28 @@ func (s *CommentHandlerImpl) CommentGet(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, Comment)
+	c.JSON(http.StatusOK, gin.H{
+		"id" : 			Comment.ID,
+		"message":		Comment.Message,
+		"photo_id": 	Comment.PhotoID,
+		"user_id": 		Comment.UserID,
+		"created_at":	Comment.CreatedAt,
+		"updated_at":	Comment.UpdatedAt,
+		"User":gin.H{
+			"id":		Comment.ID,
+			"email": 	Comment.User.Email,
+			"username":	Comment.User.Username,
+		},
+		"Photo": gin.H {
+			"id":		Comment.ID,
+			"title": 	Comment.Photo.Title,
+			"caption":	Comment.Photo.Caption,
+			"photo_id":		Comment.PhotoID,
+			"photo_url":Comment.Photo.PhotoURL,
+			"user_id":	Comment.UserID,
+		},
+
+	})
 }
 
 func (s *CommentHandlerImpl) CommentUpdate(c *gin.Context) {

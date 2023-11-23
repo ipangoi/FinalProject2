@@ -128,10 +128,7 @@ func (s *UserHandlerImpl) UserUpdate(c *gin.Context) {
 	"username": user.Username,
 	"email":    user.Email,
 	"age":      user.Age,
-})
-} 
-	
-
+})}
 func (s *UserHandlerImpl) UserDelete(c *gin.Context) {
 	var db = database.GetDB()
 	contentType := helper.GetContentType(c)
